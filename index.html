@@ -12,15 +12,15 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="pin-generator half-width">
-                    <input id="display-pin" class="form-control" type="text">
+                    <input style="color: black;" id="display-pin" class="form-control" type="text" >
                     <button id="generate-btn" class="generate-btn">Generate Pin</button>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="input-section half-width">
-                    <input class="form-control" type="text">
+                    <input id="typedPin" style="color: black;" class="form-control" type="text" >
                     <div class="numbers">
-                        <div class="calc-body">
+                        <div id="digitCalculator" class="calc-body">
                             <div class="calc-button-row">
                               <div class="button">7</div>
                               <div class="button">8</div>
@@ -42,7 +42,7 @@
                                 <div class="button">C</div>
                             </div>
                             <div>
-                                <button type="submit" class="submit-btn">Submit</button>
+                                <button id="submit" type="submit" class="submit-btn">Submit</button>
                                 <p class="action-left">3 try left</p>
                             </div>
                     </div>
@@ -50,17 +50,60 @@
             </div>
         </div>
         <div class="notify-section">
-            <p class="notify">❌ Pin Didn't Match, Please try again</p>
-            <p class="notify">✅ Pin Matched... Secret door is opening for you</p>
+            <p id="worngPin" class="notify">❌ Pin Didn't Match, Please try again</p>
+            <p id="correctPin" class="notify">✅ Pin Matched... Secret door is opening for you</p>
         </div>
     </div>
     </div>
     <script>
+        //generate pin btn event
         document.getElementById('generate-btn').addEventListener('click',function(){
-            const generatePin = Math.round(Math.random()*10000);
-            document.getElementById('display-pin').value = generatePin;
-            // console.log(generatePin);
+            document.getElementById('display-pin').value = getPin();
         })
+        // Generate Random Pin function
+        function getPin(){
+            const generateRandomPin = Math.random()*10000;
+            const confirmPin = (generateRandomPin + '').split('.')[0];
+            if(confirmPin.length === 4){
+                return confirmPin;
+            }
+            else{
+               return getPin();
+            }
+        }
+        //handler calculator button event bubble
+        document.getElementById('digitCalculator').addEventListener('click',function(event){
+            const digit = event.target.innerText;
+            if(isNaN(digit)){
+                //handle backspace
+                //handle clear
+                if(digit === 'C'){
+                    const typedInput = document.getElementById('typedPin');
+                typedInput.value = '';
+                }
+            }
+            else{
+                const typedInput = document.getElementById('typedPin');
+                typedInput.value = typedInput.value + digit;
+            }
+        })
+        document.getElementById('submit').addEventListener('click',function(){
+        verify()
+        })
+        function verify(){
+            const pin = document.getElementById('display-pin').value;
+            const typedPin = document.getElementById('typedPin').value;
+            if(pin === typedPin && pin !== ''){
+                pinMatchingConfirm('scale(1.3)','scale(0)');
+            }
+            else{
+                pinMatchingConfirm('scale(0)','scale(1.3)');
+            }
+        }
+        function pinMatchingConfirm(correctStatus,worngStatus){
+            document.getElementById('correctPin').style.transform = correctStatus;
+                document.getElementById('worngPin').style.transform = worngStatus;
+        }
     </script>
 </body>
 </html>
